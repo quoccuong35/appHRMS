@@ -15,6 +15,7 @@ import 'package:TTF/utils/screen_util.dart';
 import 'package:TTF/views/nghiphep/nghiphepchitiet.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:TTF/utils/jsonstatus.dart';
 class NghiPhep extends StatefulWidget {
   State<StatefulWidget> createState() {
     return new NghiPhepState();
@@ -22,14 +23,13 @@ class NghiPhep extends StatefulWidget {
 }
 
 class NghiPhepState extends State<NghiPhep>{
-  BuildContext _ctx;
   DateTime now = DateTime.now();
   DateTime tuNgay,denNgay;
   double value = 0;
   Network _netUtil;
   List data;
   Timer _timer;
-  double _progress;
+
   @override
   void initState() {
     _netUtil = new Network();
@@ -40,6 +40,7 @@ class NghiPhepState extends State<NghiPhep>{
       tuNgay = DateTime.utc(now.year,now.month,1);
       denNgay = now;
     });
+
     _loadNghiPhep();
   }
   void _loadNghiPhep() async {
@@ -52,13 +53,20 @@ class NghiPhepState extends State<NghiPhep>{
           "tuNgay": DateFormat("yyyy-MM-dd").format(tuNgay),
           "denNgay": DateFormat("yyyy-MM-dd").format(denNgay),
         };
-      _netUtil.getPar("NP/DSPhep",Helpers.API_TOKEN,body: body).then((dynamic rs) async {  
-            setState(() {
-              data = rs;  
-            });
-            
+      _netUtil.getPar("NP/DSPhep",Helpers.API_TOKEN,body: body).then((JsonStatus rs) async {  
+        if(rs.code != 1)
+        {
+          await EasyLoading.dismiss();
+          EasyLoading.showError(rs.text);
+        }
+        else
+        {
+          setState(() {
+            data = rs.data;  
+          });
+        }   
       });
-       await EasyLoading.dismiss();
+      await EasyLoading.dismiss();
     } catch (e) {
        await EasyLoading.dismiss();
        Message.showError("Lỗi liên hệ quản trị viên " + e.toString());
@@ -66,7 +74,6 @@ class NghiPhepState extends State<NghiPhep>{
   }
   @override
   Widget build (BuildContext context){
-    _ctx = context;
     if (ScreenUtil() == null) {
       ScreenUtil.init(
         context,
@@ -348,7 +355,7 @@ class NghiPhepState extends State<NghiPhep>{
                               Navigator.of(context).pushReplacement( 
                                 new MaterialPageRoute(
                                    settings: const RouteSettings(name: '/NPchitiet'),  
-                                   builder: (context) => new NghiPhepChiTiet(title: "Nghỉ phép chi tiết",)
+                                   builder: (context) => new NghiPhepChiTiet(id:int.parse(data[index]["IDNghiPhep"].toString()),title: "Nghỉ phép chi tiết",)
                                 )
                               ) ;
                             },

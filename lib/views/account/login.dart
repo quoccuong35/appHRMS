@@ -10,6 +10,7 @@ import 'package:TTF/widget/message.dart';
 import 'package:TTF/utils/auth.dart';
 import 'package:TTF/model/user.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:TTF/utils/jsonstatus.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -43,7 +44,8 @@ class  LoginState extends State<Login> {
             "username": _username,
             "password": _password
           };
-          var  response = await http.post(Uri.parse(Helpers.BASE_URL + Helpers.LOGIN_URL),body: body).timeout( const Duration(seconds: 10));
+          var  response = await http.post(Uri.parse(Helpers.BASE_URL + Helpers.LOGIN_URL),body: body)
+                                .timeout(Duration(seconds: Helpers.timeOut));
           final int statusCode = response.statusCode;
           if (statusCode !=200) {
             EasyLoading.dismiss();
@@ -53,7 +55,7 @@ class  LoginState extends State<Login> {
           
           JsonDecoder _decoder = new JsonDecoder();
           var res = _decoder.convert(response.body);
-          if (res["error"] != null) {
+          if (res["error"] != null ) {
             EasyLoading.dismiss();
             EasyLoading.showError(res["error_description"]);
           }
@@ -71,19 +73,27 @@ class  LoginState extends State<Login> {
                   Navigator.of(_ctx).pushReplacementNamed("/menu");
                 }).catchError((Exception error) {
                   EasyLoading.dismiss();
-                  Message.showError(error.toString());
+                  EasyLoading.showError(error.toString());
                 });
           }
         }
         on SocketException {
-          throw EasyLoading.showError('Không kết nói được Internet hoặc Máy chủ');
+           EasyLoading.dismiss();
+           EasyLoading.showError('Không kết nói được Internet hoặc Máy chủ');
         }
         on TimeoutException catch (e) {
+          EasyLoading.dismiss();
           EasyLoading.showError('Hết thời gian đăng nhập' +e.toString());
-        } on Error catch (e) {
-          EasyLoading.showError('Lỗi liên hệ nhà quản trị ' + e.toString());
+        } 
+         catch (e){
+          EasyLoading.dismiss();
+          if(e.name ==null)
+          {
+            EasyLoading.dismiss();
+            EasyLoading.showError(e.toString());
+          }
+         
         }
-
       }
     }
     

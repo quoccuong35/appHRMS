@@ -1,48 +1,98 @@
 
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:TTF/utils/network.dart';
 import 'package:TTF/utils/helpers.dart';
-import 'package:TTF/widget/message.dart';
-import 'package:TTF/model/lsnghiphep.dart';
-
+import 'package:TTF/model/md_nghiphep.dart';
+import 'package:TTF/model/md_loaiphep.dart';
+import 'package:date_field/date_field.dart';
+import 'package:intl/intl.dart';
+import 'package:TTF/utils/jsonstatus.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter/cupertino.dart';
 class  NghiPhepChiTiet extends StatefulWidget {
-    String title;
-    NghiPhepChiTiet({Key key,this.title}):super(key: key);
+     String title;
+     int id;
+    NghiPhepChiTiet({Key key,this.id,this.title}):super(key: key);
     @override
     _NghiPhepChiTietStete createState() => new _NghiPhepChiTietStete();
 }
 
 class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
    Network _netUtil;
-   int nhanSu = 1119;
-   lsNghiPhep data;
+   Timer _timer;
+   int nhanSu = Helpers.USER.NhanSu;
+   NghiPhep data =  NghiPhep() ;
+   
+   List<LoaiPhep> loaiphep = List();
    final formKey = new GlobalKey<FormState>();
    final scaffoldKey = new GlobalKey<ScaffoldState>();
    bool block = true;
   @override
   void initState() {
+     super.initState();
+    EasyLoading.addStatusCallback((status) {
+    });
     _netUtil = new Network();
-    super.initState();
+      _timer?.cancel();
+  
+    EasyLoading.show(
+    status: 'loading...', maskType: EasyLoadingMaskType.black,); 
+     _loadLoaiPhep();  
     _loadChiTiet();
+   
+    EasyLoading.dismiss();
     
   }
-  void _loadChiTiet() {
+  
+  onChangeds (String value)
+  {
+    setState(() {
+      data.MaLoaiNghiPhep = value;
+    });
+  }
+  void _loadChiTiet()async {
+        
     try {
       Map<String,dynamic> body = {
-      "id": '80135',
-      "nhanSu":'1119' 
-     };
-      _netUtil.getPar("NP/PhepChiTiet",Helpers.API_TOKEN,body: body).then((dynamic rs) async {  
+      "id": widget.id.toString(),
+      "nhanSu":this.nhanSu.toString()
+      };
+      _netUtil.getPar("NP/PhepChiTiet",Helpers.API_TOKEN,body: body).then((JsonStatus rs) async {  
+          if(rs.code != 1)
+          {
+            EasyLoading.showError(rs.text);
+          }
+          else
+          {
             setState(() {
-              data = lsNghiPhep.map(rs) ;  
+              data = NghiPhep.map(rs.data) ;  
               block = data.Block;
             });
-            print(block);
+          }   
       });
 
     } catch (e) {
-      Message.showError("Hết thời gian thao tác đăng nhập lại");
+       await EasyLoading.dismiss();
+       EasyLoading.showError("Lỗi "+e.toString() );
+    }
+  }
+  void _loadLoaiPhep() async{
+    try
+    {
+      await _netUtil.get("api/Data/LoaiPhep", Helpers.API_TOKEN).then((dynamic rs) => {
+        setState(() {
+          loaiphep = LoaiPhep.fromData(rs);  
+        })
+      }).onError((error, stackTrace) => {
+        EasyLoading.dismiss(),
+        EasyLoading.showError(error.Message)
+      });
+    }
+    catch (e){
+       await EasyLoading.dismiss();
+       EasyLoading.showError("Lỗi "+e.toString() );
     }
   }
   @override
@@ -122,17 +172,79 @@ class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
               )
             ],
           ),
-          body:  Column(
+          body:  ListView(
             children: <Widget>[
-              new Text("Dây là id"),
-            ],
-          ),
+              SizedBox(height: 10.0,),
+             DateTimeFormField(
+                              decoration: const InputDecoration(
+                                hintStyle: TextStyle(color: Colors.black45),
+                                errorStyle: TextStyle(color: Colors.redAccent),
+                                border: OutlineInputBorder(),
+                                suffixIcon: Icon(Icons.event_note),
+                                labelText:  'Từ ngày',
+                              ),
+                              initialValue: data.TuNgay,
+                              mode: DateTimeFieldPickerMode.date,
+                              dateFormat: new DateFormat("yyyy-MM-dd"),
+                              onDateSelected: (DateTime value) {
+                                setState(() {
+                                  data.TuNgay = value;
+                                });
+              },
+              ),
+             SizedBox(height: 5.0,),
+             DateTimeFormField(
+                      decoration: const InputDecoration(
+                      hintStyle: TextStyle(color: Colors.black45),
+                      errorStyle: TextStyle(color: Colors.redAccent),
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.event_note),
+                      labelText:  'Đến ngày',),
+                      initialValue: DateTime.parse(data.DenNgay.toString()),
+                      mode: DateTimeFieldPickerMode.date,
+                      dateFormat: new DateFormat("yyyy-MM-dd"),
+                      onDateSelected: (DateTime value) {
+                       setState(() {
+                        data.DenNgay = value;
+                      });
+                    },
+                ),
+            SizedBox(height: 5.0,),
+            DropdownButton<dynamic>(
+              value: data.MaLoaiNghiPhep.toString(),
+              icon: const Icon(Icons.arrow_downward),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.deepPurple),
+              isExpanded: true,
+              hint: Text("Loại nghỉ phép"),
+              underline: Container(
+                height: 2,
+                color: Colors.deepPurpleAccent,
+              ),
+               onChanged: (dynamic newValue) {
+                setState(() {
+                  data.MaLoaiNghiPhep = newValue.toString();
+                });
+              },
+              items: loaiphep
+                  .map<DropdownMenuItem<dynamic>>((dynamic value) {
+                return DropdownMenuItem<dynamic>(
+                  value: value.MaLoaiNghiPhep,
+                  child: Text(value.TenLoaiNghiPhep),
+                );
+              }).toList(growable: true),
+            )
+            
+          ],
         ),
+      ),
     );
   }
   @override
   void dispose() {
     super.dispose();
+    EasyLoading.dismiss();
   
   }
 }

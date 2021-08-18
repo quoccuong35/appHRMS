@@ -7,16 +7,20 @@ import 'package:TTF/utils/app_them.dart';
 import 'package:TTF/utils/routes.dart' as TRouter;
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import './widget/customanimation.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
+    FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+  };
   runApp(TTF());
   configLoading();
 }
 void configLoading() {
   EasyLoading.instance
-    ..displayDuration = const Duration(milliseconds: 2000)
+    ..displayDuration =  Duration(seconds: Helpers.successTime)
     ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-    ..loadingStyle = EasyLoadingStyle.light
+    ..loadingStyle = EasyLoadingStyle.dark
     ..indicatorSize = 45.0
     ..radius = 10.0
     ..progressColor = Colors.yellow

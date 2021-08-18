@@ -1,39 +1,41 @@
 
-class lsNghiPhep{
-  int IDNghiPhep;
-  int NhanSu;
-  DateTime TuNgay;
-  DateTime DenNgay;
+import 'package:TTF/utils/helpers.dart';
+
+class NghiPhep{
+   int IDNghiPhep;
+  int NhanSu = Helpers.USER.NhanSu;
+  DateTime TuNgay ;
+  DateTime DenNgay ;
   double SoNgayNghi;
   String MaLoaiNghiPhep;
-  int NguoiTao;
-  DateTime NgayTao;
+  int NguoiTao = Helpers.USER.IdNguoiDung;
+  DateTime NgayTao ;
   String MayTao;
-  String MaTrangThaiDuyet;
-  String LyDoNghi;
-  String LyDoHuy;
+  String MaTrangThaiDuyet = "1";
+  String LyDoNghi ="";
+  String LyDoHuy = "";
   int IDNguoiDuyetKeTiep;
-  bool Block;
+  bool Block = false;
   DateTime NgayBlock;
-  bool Del;
+  bool Del = false;
   int NguoiThayDoiLanCuoi;
   DateTime NgayThayDoiLanCuoi;
-  String Error;
-  String MaNhanVien;
-  String HoVaTen;
+  String Error = "";
+  String MaNhanVien = Helpers.USER.MaNV;
+  String HoVaTen = Helpers.USER.HoTen;
   double SoNgayPhepDuocNghi;
-  String TenPhong_PhanXuong;
+  String TenPhong_PhanXuong = Helpers.USER.TenPhongBan;
   List<NghiPhepChiTiet> NPCT;
-  lsNghiPhep(this.IDNghiPhep,this.NhanSu,this.TuNgay,this.DenNgay,this.SoNgayNghi,this.MaLoaiNghiPhep,this.NguoiTao,
+  NghiPhep({this.IDNghiPhep,this.NhanSu,this.TuNgay,this.DenNgay,this.SoNgayNghi,this.MaLoaiNghiPhep,this.NguoiTao,
           this.NgayTao,this.MayTao,this.MaTrangThaiDuyet,this.LyDoNghi,this.LyDoHuy,this.IDNguoiDuyetKeTiep,this.Block,
           this.NgayBlock,this.Del,this.NguoiThayDoiLanCuoi,this.NgayThayDoiLanCuoi,this.Error,this.MaNhanVien,this.HoVaTen,
-          this.SoNgayPhepDuocNghi,this.TenPhong_PhanXuong,this.NPCT);
-
-  lsNghiPhep.map(dynamic data){
+          this.SoNgayPhepDuocNghi,this.TenPhong_PhanXuong,this.NPCT});
+  
+  NghiPhep.map(dynamic data){
     this.IDNghiPhep = data["IDNghiPhep"];
     this.NhanSu = data["NhanSu"];
-    this.TuNgay = data["TuNgay"]!=null? DateTime.parse(data["TuNgay"]):null ;
-    this.DenNgay = data["DenNgay"]!=null? DateTime.parse(data["DenNgay"]):null ;
+    this.TuNgay = data["TuNgay"]!=null? DateTime.parse(data["TuNgay"]):DateTime.now() ;
+    this.DenNgay = data["DenNgay"]!=null? DateTime.parse(data["DenNgay"]):DateTime.now() ;
     this.SoNgayNghi = data["SoNgayNghi"];
     this.MaLoaiNghiPhep = data["MaLoaiNghiPhep"];
     this.NguoiTao = data["NguoiTao"];
@@ -43,7 +45,7 @@ class lsNghiPhep{
     this.LyDoNghi = data["LyDoNghi"];
     this.LyDoHuy = data["LyDoHuy"];
     this.IDNguoiDuyetKeTiep = data["IDNguoiDuyetKeTiep"];
-    this.Block = data["Block"] = null ?true:data["Block"];
+    this.Block = data["Block"] == null ?true:data["Block"];
     this.NgayBlock = data["NgayBlock"]!=null? DateTime.parse(data["NgayBlock"]):null;
     this.Del = data["Del"];
     this.NguoiThayDoiLanCuoi = data["NguoiThayDoiLanCuoi"];
@@ -55,7 +57,6 @@ class lsNghiPhep{
     this.TenPhong_PhanXuong = data["TenPhong_PhanXuong"];
     this.NPCT =  NghiPhepChiTiet.fromData(data["NPCT"]) ;
   }
-  
 
 }
 class  NghiPhepChiTiet {

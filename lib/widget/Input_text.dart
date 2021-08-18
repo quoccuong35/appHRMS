@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
 
-class InputText extends StatelessWidget {
-  final String hint;
-
-  InputText({
-    this.hint,
-  });
-
+class MyTextFormField extends StatelessWidget {
+  final String hintText;
+  final Function validator;
+  final Function onSaved;
+  final bool isPassword;
+  final bool isEmail;
+  final String value;
+  MyTextFormField({
+      this.hintText,
+      this.validator,
+      this.onSaved,
+      this.isPassword = false,
+      this.isEmail = false,
+      this.value
+    });
+  final TextEditingController _textController = new TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey.shade300,
-          style: BorderStyle.solid,
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(6)
-      ),
+    _textController.text = value;
+    return Padding(
+      padding: EdgeInsets.all(8.0),
       child: TextFormField(
         decoration: InputDecoration(
-          hintText: this.hint,
+          hintText: hintText,
+          contentPadding: EdgeInsets.all(15.0),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 13)
+          filled: true,
+          fillColor: Colors.grey[200],
         ),
+        obscureText: isPassword ? true : false,
+        validator: validator,
+        onSaved: onSaved,
+        keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
+        controller: _textController,
       ),
     );
   }
