@@ -23,8 +23,7 @@ class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
    Network _netUtil;
    Timer _timer;
    int nhanSu = Helpers.USER.NhanSu;
-   NghiPhep data =  NghiPhep() ;
-   
+   var data ;
    List<LoaiPhep> loaiphep = List();
    final formKey = new GlobalKey<FormState>();
    final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -67,7 +66,7 @@ class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
           else
           {
             setState(() {
-              data = NghiPhep.map(rs.data) ;  
+              data = lsNghiPhep.map(rs.data) ;  
               block = data.Block;
             });
           }   
@@ -174,8 +173,8 @@ class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
           ),
           body:  ListView(
             children: <Widget>[
-              SizedBox(height: 10.0,),
-             DateTimeFormField(
+            SizedBox(height: 10.0,),
+            DateTimeFormField(
                               decoration: const InputDecoration(
                                 hintStyle: TextStyle(color: Colors.black45),
                                 errorStyle: TextStyle(color: Colors.redAccent),
@@ -183,7 +182,7 @@ class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
                                 suffixIcon: Icon(Icons.event_note),
                                 labelText:  'Từ ngày',
                               ),
-                              initialValue: data.TuNgay,
+                              initialValue: data!=null? data.TuNgay:null,
                               mode: DateTimeFieldPickerMode.date,
                               dateFormat: new DateFormat("yyyy-MM-dd"),
                               onDateSelected: (DateTime value) {
@@ -192,15 +191,15 @@ class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
                                 });
               },
               ),
-             SizedBox(height: 5.0,),
-             DateTimeFormField(
+            SizedBox(height: 5.0,),
+            DateTimeFormField(
                       decoration: const InputDecoration(
                       hintStyle: TextStyle(color: Colors.black45),
                       errorStyle: TextStyle(color: Colors.redAccent),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.event_note),
                       labelText:  'Đến ngày',),
-                      initialValue: DateTime.parse(data.DenNgay.toString()),
+                     initialValue: data!=null? data.DenNgay:null,
                       mode: DateTimeFieldPickerMode.date,
                       dateFormat: new DateFormat("yyyy-MM-dd"),
                       onDateSelected: (DateTime value) {
@@ -210,31 +209,7 @@ class  _NghiPhepChiTietStete extends State<NghiPhepChiTiet> {
                     },
                 ),
             SizedBox(height: 5.0,),
-            DropdownButton<dynamic>(
-              value: data.MaLoaiNghiPhep.toString(),
-              icon: const Icon(Icons.arrow_downward),
-              iconSize: 24,
-              elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
-              isExpanded: true,
-              hint: Text("Loại nghỉ phép"),
-              underline: Container(
-                height: 2,
-                color: Colors.deepPurpleAccent,
-              ),
-               onChanged: (dynamic newValue) {
-                setState(() {
-                  data.MaLoaiNghiPhep = newValue.toString();
-                });
-              },
-              items: loaiphep
-                  .map<DropdownMenuItem<dynamic>>((dynamic value) {
-                return DropdownMenuItem<dynamic>(
-                  value: value.MaLoaiNghiPhep,
-                  child: Text(value.TenLoaiNghiPhep),
-                );
-              }).toList(growable: true),
-            )
+            
             
           ],
         ),

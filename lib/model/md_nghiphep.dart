@@ -1,8 +1,8 @@
 
 import 'package:TTF/utils/helpers.dart';
 
-class NghiPhep{
-   int IDNghiPhep;
+class lsNghiPhep{
+  int IDNghiPhep;
   int NhanSu = Helpers.USER.NhanSu;
   DateTime TuNgay ;
   DateTime DenNgay ;
@@ -26,12 +26,12 @@ class NghiPhep{
   double SoNgayPhepDuocNghi;
   String TenPhong_PhanXuong = Helpers.USER.TenPhongBan;
   List<NghiPhepChiTiet> NPCT;
-  NghiPhep({this.IDNghiPhep,this.NhanSu,this.TuNgay,this.DenNgay,this.SoNgayNghi,this.MaLoaiNghiPhep,this.NguoiTao,
+  lsNghiPhep({this.IDNghiPhep,this.NhanSu,this.TuNgay,this.DenNgay,this.SoNgayNghi,this.MaLoaiNghiPhep,this.NguoiTao,
           this.NgayTao,this.MayTao,this.MaTrangThaiDuyet,this.LyDoNghi,this.LyDoHuy,this.IDNguoiDuyetKeTiep,this.Block,
           this.NgayBlock,this.Del,this.NguoiThayDoiLanCuoi,this.NgayThayDoiLanCuoi,this.Error,this.MaNhanVien,this.HoVaTen,
           this.SoNgayPhepDuocNghi,this.TenPhong_PhanXuong,this.NPCT});
   
-  NghiPhep.map(dynamic data){
+  lsNghiPhep.map(dynamic data){
     this.IDNghiPhep = data["IDNghiPhep"];
     this.NhanSu = data["NhanSu"];
     this.TuNgay = data["TuNgay"]!=null? DateTime.parse(data["TuNgay"]):DateTime.now() ;

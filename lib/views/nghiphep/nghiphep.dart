@@ -21,7 +21,6 @@ class NghiPhep extends StatefulWidget {
     return new NghiPhepState();
   }
 }
-
 class NghiPhepState extends State<NghiPhep>{
   DateTime now = DateTime.now();
   DateTime tuNgay,denNgay;
